@@ -1,0 +1,177 @@
+<!-- 
+
+
+-->
+<!DOCTYPE html>
+<html ng-app="lista">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.css">
+    <script src="../angular/angular.js"></script>
+    <title>Lista Telefonica</title>
+    <style>
+        .jumbotron {
+            width: 400px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            padding: 15px;
+        }
+        
+        table,
+        th {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .btn {
+            margin: 10px;
+        }
+        
+        .selecionado {
+            background: yellow;
+        }
+        
+        .negrito {
+            font-weight: bolder;
+        }
+    </style>
+    <script>
+        angular.module("lista", []);
+
+        angular.module("lista")
+            .controller("listaController", function ($scope) {
+                //um objeto com 3 arrays
+                $scope.listaTelefonica = [
+                    { nome: "Bruno", telefone: "9854756", cor: "yellow" },
+                    { nome: "Rodrigo", telefone: "457812", cor: "green" },
+                    { nome: "Felipe", telefone: "987654", cor: "brown" },
+                ];
+
+                /*
+                    método recebe um contato e adiciona na lista
+                    ele adiciona uma cópia, pois sem isso, dá pra modificar esse dados
+                    pelo input, por que o input não perde essa referencia, se você copiar
+                    muda a referencia, tornando-se dois dados diferentes.
+
+                    também funciona apenas deletando, depois de excluir, deixei os 2 para lembrar
+                     o bom de excluir é que ele limpa o formulário 
+                */
+                $scope.adicionarContato = function (contato) {
+                    $scope.listaTelefonica.push(angular.copy(contato));
+                    delete $scope.contato
+                }
+
+                //objeto com arrays de operadores
+                $scope.operadoras = [
+                    { nome: "Oi", codigo: 14, categoria: "Celular" },
+                    { nome: "Vivo", codigo: 15, categoria: "Celular" },
+                    { nome: "Tim", codigo: 41, categoria: "Celular" },
+                    { nome: "Embratel", codigo: 21, categoria: "Fixo" },
+                    { nome: "GVT", codigo: 25, categoria: "Fixo" }
+                ];
+
+                /*
+                    recebe a $scope.listaTelefonica por parâmetro,
+                    verifica quais objeto desta lista, não estão selecionado. 
+                    então retorna esses objetos não selecionados para o $scope.listaTelefonica, excluindo todos os selecionados
+                */
+                $scope.apagarContato = function (contatos) {
+                    $scope.listaTelefonica = contatos.filter(function (contato) {
+                        if (!contato.selecionado) return contato;
+                    });
+
+                };
+
+                /*
+                    recebe a $scope.listaTelefonica por Parâmetro
+                    e verifica se algum objeto dela está selecionado
+                    se houver, retorna true
+                */
+                $scope.isContatoSelecionado = function (contatos) {
+                    return contatos.some(function (contato) {
+                        return contato.selecionado;
+                    });
+
+                };
+            });
+    </script>
+</head>
+
+<body ng-controller="listaController">
+    <div class="jumbotron">
+        <table class="table" ng-show="listaTelefonica.length">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Operadora</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--
+                    o ng-class irá atribuir classes à linha se a variavel contato.selecionado for true
+                    contato é a variável usada para receber cada iteração de listaTelefonica.
+                    contato.selecionado, não está definido no controller apenas na view
+                    isso funciona por causa do double bind do angular
+                -->
+                <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in listaTelefonica">
+                    <!-- ao clicar no checkbox, a variavel contato.selecionado, se tornará true e o css anterior entra em ação -->
+                    <td><input type="checkbox" ng-model="contato.selecionado"></td>
+                    <td ng-bind="contato.nome"></td>
+                    <td ng-bind="contato.telefone">
+                    </td>
+                    <td ng-bind="contato.operadora">
+                    </td>
+                    <td>
+                        <div style="width: 20px; height: 20px" ng-style="{'background': contato.cor}"></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr/>
+        <!--
+            aqui estamos definindo um objeto para adquirir os dados desse 'form'
+            esse objeto não tem nada haver com o anterior
+            -->
+        <input class=" form-control " type="text " ng-model="novoContato.nome " placeholder="Nome " />
+
+        <input class="form-control " type="text " ng-model="novoContato.telefone " placeholder="Telefone " />
+
+        <!-- nesse ng-options da pra traduzir assim:
+            value = operadora.codigo        == será a resposta que a opção retornará
+            label = operadora.nome          == será o label do select para escolher
+            variavel-auxiliar = operadora   == receberá cada iteração da lista
+            lista = operadores              == lista definida no $scope
+             -->
+        <select class="form-control " ng-model="novoContato.operadora " ng-options="operadora.codigo as operadora.nome
+                            for operadora in operadoras ">
+            <option value=" ">Selecione uma operadora</option>
+        </select>
+
+        <!--  neste botão de adicionar, temos um evento de click, onde será chamado o método que vai salvar (acrescentar à lista) o novo contato
+              como modo de validação inicial, o botão só ficará disponível, depois que os campos receberem algum texto, mas ignorá o select
+              para considerar o select, basta acrescentar essa condição no ng-disabled   -->
+        <button class="btn btn-primary btn-block " ng-click="adicionarContato(novoContato) " ng-disabled="!novoContato.nome
+                            || !novoContato.telefone ">Adicionar Contato</button>
+
+        <!--  essa parte me confundiu bastante, acho que pelo modo como ele nomeou as variáveis, mas então percebi que ele manda a lista pela função ao invês de 
+            ler ela pelo $scope, pois ele diz ser uma má prática usar o $scope para ler -->
+        <button class="btn btn-danger btn-block " ng-click="apagarContato(listaTelefonica) " ng-if="isContatoSelecionado(listaTelefonica) ">Apagar Contato</button>
+
+    </div>
+    <div ng-include="'footer.html'"></div>
+</body>
+
+</html>
+
+<!--
+    ng-show : mostra um elemento, mas o elemento fica apenas hidden
+    ng-hide: esconde um elemento, mas o elemento fica apenas hidden
+    ng-if: mostra ou esconde, mas quando esconder o elemento deixa de existir
+    -->
