@@ -40,6 +40,9 @@
         }
     </style>
     <script>
+        /*
+            injetando o Modulo ngMessages na aplicação
+        */
         angular.module("lista", ["ngMessages"]);
 
         angular.module("lista")
@@ -54,6 +57,9 @@
                 $scope.adicionarContato = function (contato) {
                     $scope.listaTelefonica.push(contato);
                     delete $scope.novoContato
+                    /*
+                        devolvendo a 'virgindade' para o form
+                    */
                     $scope.contatoForm.$setPristine();
                 }
 
@@ -115,12 +121,27 @@
         </table>
 
         <hr/>
+        <!--
+                Esse <form> não tem a função de submeter os dados, ele apenas
+                está servindo como um 'objeto', para que possamos validar seus 'atributos',
+                esses 'atributos' são os campos que possuem a diretiva ng-required
+            -->
         <form name="contatoForm">
 
+            <!-- Adicionando a diretiva ng-required -->
             <input class=" form-control " name="nome" type="text " ng-model="novoContato.nome " placeholder="Nome " ng-required="true"
                 ng-minlength="10" />
 
-            <!-- Expressão Regular -->
+            <!-- Expressão Regular é como se chama aquele expressão na diretiva ng-pattern
+                ele serve para validar a formatação do campo,
+                essa expressão tem que estar entre '/'
+                o '^' significa que ela deve iniciar assim, sem isso ele vai procurar essa expressão no texto inteiro
+                ex. asdasd9999-99993432 seria valido 
+                
+                '\d' significa digito e o {n} o número de digitos, podendo ser mais de 1, ex. {n,n+1}
+
+                o '$' significa que a string deve terminar com essa expressão
+                -->
             <input class="form-control " name="tel" type="text " ng-model="novoContato.telefone " placeholder="Telefone" ng-required="true"
                 ng-pattern="/^\d{4,5}-\d{4}$/" />
 
@@ -132,6 +153,19 @@
 
         </form>
 
+        <!--
+            A diretiva ng-messages serve para mostrar as mensagens de validação
+            ela fica olhando para um campo, neste caso o campo nome.
+            cada filho dessa diretiva são os possiveis erros e as mensagens que eles apresentam
+            ou seja, se não atingir o tamanho mínimo, será uma mensagem, se estiver sujo ou vazio outra
+            bem legal,
+
+            mas apresenta um erro, se você colocar alguma cor de fundo na div pai, mesmo em erro
+            ela aparece sem mensagem alguma, apenas um campo de outra cor.
+
+            por isso deixei as classes de alert nas div's filhas'
+
+         -->
         <div ng-messages="contatoForm.nome.$error">
 
             <div ng-message="$dirty && required" class="alert alert-danger">
@@ -143,6 +177,10 @@
             </div>
         </div>
 
+        <!-- 
+            Outra forma de validação, um pouco mais verbosa, porém funciona, e você tem mais controle na validação
+
+        -->
         <div ng-show="contatoForm.tel.$error.required && contatoForm.tel.$dirty" class="alert alert-danger">
             Por favor, Preencha o Telefone!
         </div>
@@ -150,6 +188,10 @@
         <div ng-show="contatoForm.tel.$error.pattern" class="alert alert-warning">
             O Telefone deve possuir o formato 99999-9999
         </div>
+
+        <!-- esse botão só vai aparecer se o form inteiro estiver valido, ou seja, cada campo com a diretiva
+            ng-required = true, pois isso usamos a tag <form>    
+         -->
         <button class="btn btn-primary btn-block " ng-click="adicionarContato(novoContato)" ng-disabled="contatoForm.$invalid">Adicionar Contato</button>
 
 
@@ -157,7 +199,10 @@
 
     </div>
 
-    <!-- <div ng-include="'footer.html'"></div> -->
+    <!--
+        no chrome da pau esse linha, ela funciona em um servidor 
+        <div ng-include="'footer.html'"></div> 
+        -->
 </body>
 
 </html>
