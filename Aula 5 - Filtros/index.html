@@ -1,0 +1,231 @@
+<!-- 
+
+
+-->
+<!DOCTYPE html>
+<html ng-app="lista">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.css">
+    <script src="../angular/angular.js"></script>
+
+    <!-- 
+        o simples fato de eu importar esse js, torna as data e a formatação da moeda
+        no padrão do brasil, se por a caso, eu importar o padrão do USA, iria mudar tudo
+        muito show isso
+     -->
+    <script src="../angular/i18n/angular-locale_pt-br.js"></script>
+
+    <script src="../angular/angular-messages.js"></script>
+    <title>Lista Telefonica</title>
+    <style>
+        .jumbotron {
+            width: 600px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            padding: 15px;
+        }
+        
+        table,
+        th {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .btn {
+            margin: 10px;
+        }
+        
+        .selecionado {
+            background: yellow;
+        }
+        
+        .negrito {
+            font-weight: bolder;
+        }
+    </style>
+    <script>
+        angular.module("lista", ["ngMessages"]);
+
+        angular.module("lista")
+            // injetando o $filter no controller, para tratar o filtro
+            // fora da view
+            .controller("listaController", function ($scope, $filter) {
+
+                $scope.listaTelefonica = [
+                    // da para aplicar dessa maneira ou de uma maneira
+                    // mais simples como UpperCaseFilter(), porém, assim
+                    //você só está puxando esse método
+
+                    // adicionei o nome das operadoras nos elementos que 
+                    //não tinham  e adicionei um campo data
+                    { nome: $filter('uppercase')("Bruno"), operadora: "Oi", date: new Date(), telefone: "9854756", cor: "yellow" },
+                    { nome: "Rodrigo", operadora: "Oi", date: new Date(), telefone: "457812", cor: "green" },
+                    { nome: "Felipe", operadora: "Oi", date: new Date(), telefone: "987654", operadora: "Oi", cor: "brown" },
+                ];
+
+                $scope.operadoras = [
+                    //Adicionei o campo Preco 
+                    { nome: "Oi", codigo: 14, categoria: "Celular", preco: 2 },
+                    { nome: "Vivo", codigo: 15, categoria: "Celular", preco: 1 },
+                    { nome: "Tim", codigo: 41, categoria: "Celular", preco: 3 },
+                    { nome: "Embratel", codigo: 21, categoria: "Fixo", preco: 1 },
+                    { nome: "GVT", codigo: 25, categoria: "Fixo", preco: 2 }
+                ];
+
+                $scope.adicionarContato = function (contato) {
+                    console.log(contato);
+                    $scope.listaTelefonica.push(contato);
+                    delete $scope.novoContato;
+                    $scope.contatoForm.$setPristine();
+                }
+
+                $scope.apagarContato = function (contatos) {
+                    $scope.listaTelefonica = contatos.filter(function (contato) {
+                        if (!contato.selecionado) return contato;
+                    });
+
+                };
+
+                $scope.isContatoSelecionado = function (contatos) {
+                    return contatos.some(function (contato) {
+                        return contato.selecionado;
+                    });
+                };
+                /*
+                    Metódo que irá filtrar a tabela, o legal é que eu estou jogando 
+                    em uma variável do scope, o nome da coluna que será filtrada,
+                    que no exemplo poderá ser 'nome' ou 'telefone'.
+                */
+                $scope.ordenarPor = function (campo) {
+                    $scope.criterioOrdenacao = campo
+                    /*
+                        além de fltrar, eu posso decidir se será crescente ou descrecente
+                        a variável direcao, defini isso, na primeira fez ela será undefined
+                        e a negativa de undefined é falso, tornando o filtro crescente
+                        mas na segundo fez, a negativa de false é true, tornando o filtro
+                        descrecente, muito show
+                    */
+                    $scope.direcao = !$scope.direcao;
+                }
+            });
+    </script>
+</head>
+
+<body ng-controller="listaController">
+    <div class="jumbotron">
+
+        <!--
+            ele fez esse campo de busca para a tabela, muito legal, pois no HTML5, não existe relação entre esse campo e a tabela, a sacada e é que estou jogando em uma variável
+            o valor que quero filtrar, que será usado mais abaixo
+        -->
+        <input class="form-control" type="text" ng-model="busca" placeholder="O que você está buscando?" />
+
+        <table class="table" ng-show="listaTelefonica.length">
+            <thead>
+                <tr>
+                    <th></th>
+                    <!--
+                         ele criou um link para filtrar a coluna, mas poderia ser qualquer
+                         coisa aqui, uma img, botão, etc.
+                     -->
+                    <th><a href="" ng-click="ordenarPor('nome')"> Nome</a></th>
+                    <th><a href="" ng-click="ordenarPor('telefone')">Telefone</a></th>
+                    <th>Operadora</th>
+                    <th>Datas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--
+                    é aqui que o filtro da tabela acontece, nós temos 2 filtros, o filter:busca
+                    que vai filtrar de acordo com o que for digitado no campo  de busca lá emcima
+
+                    e o orderBy que vai ordenar a tabela, o primeiro campo é qual coluna será
+                    ordenada e o segundo parâmetro é será crescente ou descrecente
+
+                    quando eu clickar no nome da coluna, esse o nome do atributo do objeto será
+                    jogado no criteiroOrdenacao, fazendo com que o orderBy ordene na hora a tabela
+                -->
+                <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in listaTelefonica | filter:busca | orderBy: criterioOrdenacao : direcao">
+                    <td><input type="checkbox" ng-model="contato.selecionado "></td>
+                    <td ng-bind="contato.nome"></td>
+                    <td ng-bind="contato.telefone">
+                    </td>
+                    <td ng-bind="contato.operadora">
+                    </td>
+                    <!-- Maneira muito simples de formatar uma data, chega a ser tosco de 
+                        tão fácil, mas isso é apenas uma máscara, o dado puro está no seu 
+                        formato padrão
+
+                         essa parte pode ser mudado pelo ngLocale
+                     -->
+                    <td ng-bind="contato.date | date:'dd/MMMM/yyyy HH:mm'"></td>
+
+                </tr>
+            </tbody>
+        </table>
+
+        <hr/>
+
+        <form name="contatoForm">
+
+            <input class=" form-control " name="nome" type="text " ng-model="novoContato.nome " placeholder="Nome " ng-required="true"
+                ng-minlength="10" />
+
+
+            <input class="form-control " name="tel" type="text " ng-model="novoContato.telefone " placeholder="Telefone" ng-required="true"
+                ng-pattern="/^\d{4,5}-\d{4}$/" />
+
+
+            <!-- 
+                não ficou nada bonito essa parte, mas funciona, aqui ele está formatando
+                o preco da operadora, para sair com a ',' e o cifrão
+                e depois está ordenando por nome, como aqui não vamos mudar, só colocou o nome mesmo
+
+                essa parte pode ser mudado pelo ngLocale
+            -->
+            <select class="form-control " ng-model="novoContato.operadora " ng-options="operadora.nome as operadora.nome + '( ' + (operadora.preco | currency )+' ) '
+                            for operadora in operadoras |orderBy:'nome'">
+            <option value="">Selecione uma operadora</option>
+        </select>
+
+        </form>
+
+
+        <div ng-messages="contatoForm.nome.$error">
+
+            <div ng-message="($dirty && required)" class="alert alert-danger">
+                Por favor, Preencha o nome!
+            </div>
+
+            <div ng-message="minlength" class="alert alert-warning">
+                o campo nome deve ter no minimo 10 caracteres!
+            </div>
+        </div>
+
+
+        <div ng-show="contatoForm.tel.$error.required && contatoForm.tel.$dirty" class="alert alert-danger">
+            Por favor, Preencha o Telefone!
+        </div>
+
+        <div ng-show="contatoForm.tel.$error.pattern" class="alert alert-warning">
+            O Telefone deve possuir o formato 99999-9999
+        </div>
+
+
+        <button class="btn btn-primary btn-block " ng-click="adicionarContato(novoContato)" ng-disabled="contatoForm.$invalid">Adicionar Contato</button>
+
+
+        <button class="btn btn-danger btn-block " ng-click="apagarContato(listaTelefonica) " ng-if="isContatoSelecionado(listaTelefonica) ">Apagar Contato</button>
+
+        <!-- uma maneira de criar frações-->
+
+        {{100 | number:2}}
+    </div>
+
+</body>
+
+</html>
