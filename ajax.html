@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ajax</title>
+    <script>
+        var get = function (url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    callback(xhr.responseText, xhr.status);
+                }
+            };
+            xhr.open("GET", url);
+            xhr.send(null);
+        }
+
+        function mandar() {
+            get("http://localhost:3412/contatos", function (data) {
+                document.getElementById("ajax").innerHTML = data;
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Ajax</h1>
+
+    <br/>
+    <br/>
+    <button onclick="mandar()">Mandar Get</button>
+    <div id="ajax"></div>
+</body>
+
+</html>
