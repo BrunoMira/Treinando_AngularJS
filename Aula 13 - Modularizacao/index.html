@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html ng-app="listaTelefonica">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/ui.css">
+    <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.css">
+    <script src="../angular/angular.js"></script>
+    <script src="../angular/i18n/angular-locale_pt-br.js"></script>
+    <script src="lib/serialGenerator/serialGenerator.js"></script>
+    <script src="lib/UI/ui.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/controllers/listaTelefonica.js"></script>
+    <script src="js/services/contatosAPIService.js"></script>
+    <script src="js/services/operadorasAPIService.js"></script>
+    <script src="js/services/value/configValue.js"></script>
+
+    <script src="js/filter/nameFilter.js"></script>
+    <script src="js/filter/ellipsisFilter.js"></script>
+    <script src="js/directive/uiAlertDirective.js"></script>
+    <script src="js/directive/uiDateDirective.js"></script>
+    <script src="js/config/serialGeneratorConfig.js"></script>
+    <script src="../angular/angular-messages.js"></script>
+    <title>Lista Telefonica</title>
+</head>
+
+<body ng-controller="listaController">
+    <div class="jumbotron">
+        <!--
+        <ui-alert title="Ops, Aconteceu um problema!">
+            Não foi possível carregar os dados
+        </ui-alert>
+        -->
+        <ui-accordions>
+            <ui-accordion title="1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate diam nec sapien facilisis luctus.
+                Quisque ac sem porta, tincidunt orci a, condimentum risus. Donec dolor leo, aliquet non mollis vitae, ullamcorper
+                vitae lorem. Aliquam in dolor ut quam fermentum fermentum id nec nunc.</ui-accordion>
+
+            <ui-accordion title="2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate diam nec sapien facilisis luctus.
+                Quisque ac sem porta, tincidunt orci a, condimentum risus. Donec dolor leo, aliquet non mollis vitae, ullamcorper
+                vitae lorem. Aliquam in dolor ut quam fermentum fermentum id nec nunc.</ui-accordion>
+
+            <ui-accordion title="3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate diam nec sapien facilisis luctus.
+                Quisque ac sem porta, tincidunt orci a, condimentum risus. Donec dolor leo, aliquet non mollis vitae, ullamcorper
+                vitae lorem. Aliquam in dolor ut quam fermentum fermentum id nec nunc.</ui-accordion>
+        </ui-accordions>
+
+        <input class="form-control" type="text" ng-model="busca" placeholder="O que você está buscando?" />
+
+        <table class="table" ng-show="listaTelefonica.length">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Serial</th>
+                    <th><a href="" ng-click="ordenarPor('nome')"> Nome</a></th>
+                    <th><a href="" ng-click="ordenarPor('telefone')">Telefone</a></th>
+                    <th>Operadora</th>
+                    <th>Datas</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in listaTelefonica | filter:busca | orderBy: criterioOrdenacao : direcao">
+                    <td><input type="checkbox" ng-model="contato.selecionado "></td>
+                    <td>{{contato.serial}}</td>
+                    <td ng-bind="contato.nome | name | ellipsis:10"></td>
+                    <td ng-bind="contato.telefone">
+                    </td>
+                    <td ng-bind="contato.operadora.nome">
+                    </td>
+                    <td ng-bind="contato.data | date:'dd / MMMM / yyyy HH:mm'"></td>
+
+                </tr>
+            </tbody>
+        </table>
+
+        <hr/>
+
+        <form name="contatoForm">
+
+            <input class=" form-control " name="nome" type="text " ng-model="novoContato.nome " placeholder="Nome " ng-required="true"
+                ng-minlength="10" />
+
+            <input class="form-control " name="tel" type="text " ng-model="novoContato.telefone " placeholder="Telefone" ng-required="true"
+                ng-pattern="/^\d{4,5}-\d{4}$/" />
+
+            <input type="text" class="form-control" ng-model="novoContato.data" name="data" placeholder="data" ui-date/>
+
+            <select class="form-control " ng-model="novoContato.operadora " ng-options="operadora.nome + '( ' + (operadora.preco | currency )+' ) '
+                            for operadora in operadoras |orderBy:'nome'">
+            <option value="">Selecione uma operadora</option>
+        </select>
+
+        </form>
+
+        <div ng-messages="contatoForm.nome.$error">
+
+            <div ng-message="($dirty && required)" class="alert alert-danger">
+                Por favor, Preencha o nome!
+            </div>
+
+            <div ng-message="minlength" class="alert alert-warning">
+                o campo nome deve ter no minimo 10 caracteres!
+            </div>
+        </div>
+
+        <div ng-show="contatoForm.tel.$error.required && contatoForm.tel.$dirty" class="alert alert-danger">
+            Por favor, Preencha o Telefone!
+        </div>
+
+        <div ng-show="contatoForm.tel.$error.pattern" class="alert alert-warning">
+            O Telefone deve possuir o formato 99999-9999
+        </div>
+
+        <button class="btn btn-primary btn-block " ng-click="adicionarContato(novoContato)" ng-disabled="contatoForm.$invalid">Adicionar Contato</button>
+
+        <button class="btn btn-danger btn-block " ng-click="apagarContato(listaTelefonica) " ng-if="isContatoSelecionado(listaTelefonica) ">Apagar Contato</button>
+
+    </div>
+
+</body>
+
+</html>
