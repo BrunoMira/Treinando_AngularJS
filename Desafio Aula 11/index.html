@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html ng-app="listaTelefonica">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/ui.css">
+    <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.css">
+    <script src="../angular/angular.js"></script>
+    <script src="../angular/i18n/angular-locale_pt-br.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/controllers/listaTelefonica.js"></script>
+    <script src="js/services/contatosAPIService.js"></script>
+    <script src="js/services/operadorasAPIService.js"></script>
+    <script src="js/services/value/configValue.js"></script>
+    <script src="js/services/serialGenerator.js"></script>
+    <script src="js/filter/nameFilter.js"></script>
+    <script src="js/filter/ellipsisFilter.js"></script>
+    <script src="js/directive/uiAlertDirective.js"></script>
+    <script src="js/directive/uiDateDirective.js"></script>
+    <script src="js/directive/uiCpfDirective.js"></script>
+    <script src="js/directive/uiCnpjDirective.js"></script>
+    <script src="js/directive/uiCepDirective.js"></script>
+    <script src="js/directive/uiTelDirective.js"></script>
+    <script src="js/config/serialGeneratorConfig.js"></script>
+    <script src="../angular/angular-messages.js"></script>
+    <title>Lista Telefonica</title>
+</head>
+
+<body ng-controller="listaController">
+    <div class="jumbotron">
+        <h2>Formatações</h2>
+        <input class="form-control" type="text" ng-model="formato.data" name="data" placeholder="data ex : 12/06/2016" ui-date />        {{formato.data}}
+
+        <input class="form-control" type="text" ng-model="formato.cpf" placeholder="CPF ex: 431.674.459-23" ui-cpf /> {{formato.cpf}}
+
+        <input class="form-control" type="text" ng-model="formato.cnpj" placeholder="CNPJ ex:42.620.171/0001-91 " ui-cnpj/>        {{formato.cnpj}}
+
+        <input class="form-control" type="text" ng-model="formato.cep" placeholder="CEP ex: 18057-172" ui-cep /> {{formato.cep}}
+
+        <input class="form-control" type="text" ng-model="formato.tel" placeholder="Tel ex: (15)98956-8575 ou (15)8956-8575" ui-tel/>        {{formato.tel}}
+
+    </div>
+
+</body>
+
+</html>
