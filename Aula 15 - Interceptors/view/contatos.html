@@ -1,0 +1,56 @@
+<div class="jumbotron">
+    <!--
+        <ui-alert title="Ops, Aconteceu um problema!">
+            Não foi possível carregar os dados
+        </ui-alert>
+        -->
+    <ui-accordions>
+        <ui-accordion title="1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate diam nec sapien facilisis luctus. Quisque
+            ac sem porta, tincidunt orci a, condimentum risus. Donec dolor leo, aliquet non mollis vitae, ullamcorper vitae
+            lorem. Aliquam in dolor ut quam fermentum fermentum id nec nunc.</ui-accordion>
+
+        <ui-accordion title="2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate diam nec sapien facilisis luctus. Quisque
+            ac sem porta, tincidunt orci a, condimentum risus. Donec dolor leo, aliquet non mollis vitae, ullamcorper vitae
+            lorem. Aliquam in dolor ut quam fermentum fermentum id nec nunc.</ui-accordion>
+
+        <ui-accordion title="3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate diam nec sapien facilisis luctus. Quisque
+            ac sem porta, tincidunt orci a, condimentum risus. Donec dolor leo, aliquet non mollis vitae, ullamcorper vitae
+            lorem. Aliquam in dolor ut quam fermentum fermentum id nec nunc.</ui-accordion>
+    </ui-accordions>
+
+    <input class="form-control" type="text" ng-model="busca" placeholder="O que você está buscando?" />
+
+    <table class="table" ng-show="listaTelefonica.length">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Serial</th>
+                <th><a href="" ng-click="ordenarPor('nome')"> Nome</a></th>
+                <th><a href="" ng-click="ordenarPor('telefone')">Telefone</a></th>
+                <th>Operadora</th>
+                <th>Datas</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in listaTelefonica | filter:busca | orderBy: criterioOrdenacao : direcao">
+                <td><input type="checkbox" ng-model="contato.selecionado "></td>
+                <td>{{contato.serial}}</td>
+                <td>
+                    <a href="#!/destaque/{{contato.id}}">{{contato.nome | name}}</a>
+                </td>
+                <td ng-bind="contato.telefone">
+                </td>
+                <td ng-bind="contato.operadora.nome">
+                </td>
+                <td ng-bind="contato.data | date:'dd / MMMM / yyyy HH:mm'"></td>
+
+            </tr>
+        </tbody>
+    </table>
+
+    <hr/>
+
+    <a href="#!/novo" class="btn btn-primary btn-block">Novo Contato</a>
+
+</div>
