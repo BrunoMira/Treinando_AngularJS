@@ -4,6 +4,8 @@ var app = express();
 
 app.use(bodyParser.json());
 
+
+
 var operadoras = [
   { nome: "Oi", codigo: 14, categoria: "Celular", preco: 2 },
   { nome: "Vivo", codigo: 15, categoria: "Celular", preco: 1 },
@@ -54,4 +56,5 @@ app.delete("/contatos", function (req, res) {
   res.json(true);
 })
 */
-app.listen(process.env.PORT || 3412);
+app.use(express.static(__dirname + '/Aula 14/'))
+  .listen(process.env.PORT || 3412);
